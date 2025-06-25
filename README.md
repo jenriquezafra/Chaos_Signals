@@ -12,7 +12,7 @@ The main goal is to develop a quantitative analysis pipeline that combines:
 - Backtesting to evaluate predictive performance
 
 ## Structure
-- `notebooks/`:Jupyter notebooks for exploration modeling.
+- `notebooks/`: -> Jupyter notebooks for exploration modeling.
 - `src/`: Reusable python modules.
 - `data/`: Raw and processed option data.
 - `outputs/`: Visualization and signal results.
