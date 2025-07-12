@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Literal, overload
 import time
 import logging
-
+import pyarrow.feather as feather
 import pandas as pd
 import yfinance as yf   
 
@@ -163,7 +163,7 @@ def _spot_cache_path(tkr: str, iv: str, s:str | None, e:str | None)  -> Path:
     tag = f"{s}_{e}" if s or e else "full"
     return CACHE_SPOT_DIR / f"{tkr}_{iv}_{tag}.parquet"
 
-def _opt_cache_path() -> Path: 
+def _opt_cache_path(tkr: str, exp: str) -> Path: 
     return CACHE_OPT_DIR / f"{tkr}_{exp}.feather"
 
 def _clean_chain(df: pd.DataFrame) -> pd.DataFrame:
@@ -174,7 +174,7 @@ def _clean_chain(df: pd.DataFrame) -> pd.DataFrame:
     return (
         df[wanted]
         .rename(columns=str.lower)
-        .assing(expiration=lambda d: d.contractsymbol.str[-8:]) # CAMBIARLO (ejemplo)
+        .assign(expiration=lambda d: d.contractsymbol.str[-8:]) # CAMBIARLO (ejemplo)
         .set_index("contractsymbol")
     )
 
@@ -185,11 +185,11 @@ def _write_parquet(df: pd. DataFrame, p: Path):
     df.to_parquet(p, compression="zstd")
 
 def _write_opt_cache(p: Path, calls: pd.DataFrame, puts: pd.DataFrame):
-    import feather
+#    import feather
     feather.write_feather(pd.concat({"calls": calls, "puts": puts}), p)
 
 def _read_opt_cache(p: Path, side: str):
-    import feather, pandas as pd
+#    import feather, pandas as pd
     data = feather.read_feater(p)
     if side == "both":
         return data.loc["calls"], data.loc["puts"]
@@ -206,7 +206,7 @@ if __name__ == "__main__":
     parser.add_argument("--ticker", required=True)
     parser.add_argument("--interval", default="1d")
     parser.add_argument("--spot", action="store_true")
-    parser.add_argument("--optiones", action="store_true")
+    parser.add_argument("--options", action="store_true")
     args = parser.parse_args()
 
     if args.spot:
