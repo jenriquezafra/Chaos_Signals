@@ -60,7 +60,12 @@ def get_spot(
         auto_adjust=auto_adjust,
         prepost=prepost,
         progress=False
-    ).tz_localize(DEFAULT_TZ, nonexistent="shift_forward")
+    )
+
+    if df.index.tz is None:
+        df = df.tz_localize(DEFAULT_TZ, nonexistent="shift_forward")
+    else:
+        df = df.tz_convert(DEFAULT_TZ)
 
     # 2) normalización de columnas y tipos
     df.rename(columns=str.lower, inplace=True)
@@ -190,7 +195,7 @@ def _write_opt_cache(p: Path, calls: pd.DataFrame, puts: pd.DataFrame):
 
 def _read_opt_cache(p: Path, side: str):
 #    import feather, pandas as pd
-    data = feather.read_feater(p)
+    data = feather.read_feather(p)
     if side == "both":
         return data.loc["calls"], data.loc["puts"]
     return data.loc[side]
