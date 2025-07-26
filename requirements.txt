@@ -10,10 +10,12 @@ curl_cffi==0.12.0
 cycler==0.12.1
 debugpy==1.8.14
 decorator==5.2.1
+eventkit==1.0.3
 executing==2.2.0
 feather-format==0.4.1
 fonttools==4.58.4
 frozendict==2.4.6
+ib-insync==0.9.86
 idna==3.10
 ipykernel==6.29.5
 ipython==9.4.0
@@ -34,6 +36,7 @@ peewee==3.18.2
 pexpect==4.9.0
 pillow==11.2.1
 platformdirs==4.3.8
+polygon-api-client==1.15.3
 prompt_toolkit==3.0.51
 protobuf==6.31.1
 psutil==7.0.0
@@ -44,6 +47,7 @@ pycparser==2.22
 Pygments==2.19.2
 pyparsing==3.2.3
 python-dateutil==2.9.0.post0
+python-dotenv==1.1.1
 pytz==2025.2
 pyzmq==27.0.0
 requests==2.32.4
@@ -57,5 +61,5 @@ typing_extensions==4.14.1
 tzdata==2025.2
 urllib3==2.5.0
 wcwidth==0.2.13
-websockets==15.0.1
+websockets==14.2
 yfinance==0.2.65
