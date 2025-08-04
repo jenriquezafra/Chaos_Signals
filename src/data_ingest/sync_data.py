@@ -14,10 +14,7 @@ TICKERS = ['SPY', 'QQQ', 'AAPL', 'NVDA', 'TSLA']
 
 def _refresh_yahoo():
     for tkr in TICKERS:
-        update_cache(tkr,
-                     spot_intervals=["1d", "60m"],
-                     options_latest=True
-                     )
+        update_cache(tkr, spot_intervals=["1d"])        
     print("Datos de Yahoo Finance actualizados.")
 
 

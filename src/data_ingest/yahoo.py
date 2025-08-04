@@ -17,10 +17,8 @@ from datetime import datetime, timedelta
 # Configuración global  ─────────────────────────────────────────────────────────────
 # -----------------------------------------------------------------------------------
 DATA_DIR = Path("data/raw/yahoo").resolve()
-CACHE_SPOT_DIR = DATA_DIR / "spot"
-CACHE_OPT_DIR = DATA_DIR / "options"
+CACHE_SPOT_DIR = DATA_DIR / "stocks"
 CACHE_SPOT_DIR.mkdir(parents=True, exist_ok=True)
-CACHE_OPT_DIR.mkdir(parents=True, exist_ok=True)
 
 RATE_LIMIT_DELAY = 0.6  # yahoo solo deja 2 peticiones/s 
 DEFAULT_TZ = "Europe/Madrid"
@@ -29,6 +27,8 @@ logger = logging.getLogger(__name__)
 START_DATE = (datetime.now() - timedelta(days=365*3)).strftime("%Y-%m-%d") # últimos 3 años
 END_DATE = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d") # ayer
 
+TKRS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'AMD', 'META',
+        'GC=F', 'SPY', 'QQQ', 'EURUSD=X']
 
 # -----------------------------------------------------------------------------------
 # Funciones públicas    ─────────────────────────────────────────────────────────────
@@ -82,9 +82,6 @@ def get_spot(
     return df
     
 
-
-
-
 def update_cache(
         ticker: str,
         *,
@@ -99,13 +96,20 @@ def update_cache(
 
 
 
-
 # -----------------------------------------------------------------------------------
 # Helpers privados      ─────────────────────────────────────────────────────────────
 # -----------------------------------------------------------------------------------
+
+OTHERS_TICKERS = {"GC=F", "QQQ", "SPY"}
+
 def _spot_cache_path(tkr: str, iv: str) -> Path:
-    tag = f"{START_DATE}_{END_DATE}"
-    return CACHE_SPOT_DIR / f"{tkr}_{iv}_{tag}.parquet"
+    tag = "latest"
+    if tkr in OTHERS_TICKERS or any(tkr.endswith(suffix) for suffix in ["=X", "=F"]):
+        base_dir = DATA_DIR / "others"
+    else: 
+        base_dir = CACHE_SPOT_DIR
+    base_dir.mkdir(parents=True, exist_ok=True)
+    return base_dir / f"{tkr}_latest.parquet"
 
 def _read_parquet(p: Path) -> pd.DataFrame:
     return pd.read_parquet(p)
@@ -120,6 +124,5 @@ def _write_parquet(df: pd. DataFrame, p: Path):
 # -----------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'AMD', 'META']
-    for tkr in tickers:
+    for tkr in TKRS:
         update_cache(tkr, spot_intervals=["1d"])
