@@ -104,12 +104,9 @@ OTHERS_TICKERS = {"GC=F", "QQQ", "SPY"}
 
 def _spot_cache_path(tkr: str, iv: str) -> Path:
     tag = "latest"
-    if tkr in OTHERS_TICKERS or any(tkr.endswith(suffix) for suffix in ["=X", "=F"]):
-        base_dir = DATA_DIR / "others"
-    else: 
-        base_dir = CACHE_SPOT_DIR
+    base_dir = CACHE_SPOT_DIR
     base_dir.mkdir(parents=True, exist_ok=True)
-    return base_dir / f"{tkr}_latest.parquet"
+    return base_dir / f"{tkr}_{tag}.parquet"
 
 def _read_parquet(p: Path) -> pd.DataFrame:
     return pd.read_parquet(p)
