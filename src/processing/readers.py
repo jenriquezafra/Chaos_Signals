@@ -11,22 +11,12 @@ import pandas as pd
 # Configuración global  ─────────────────────────────────────────────────────────────
 # -----------------------------------------------------------------------------------
 
-RAW_DIR = Path(__file__).resolve().parents[3] / "data" / "raw" # no se si parents 2 o 1
+RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "raw" # no se si parents 2 o 1
 
 
 # -----------------------------------------------------------------------------------
 # Funciones públicas    ─────────────────────────────────────────────────────────────
 # -----------------------------------------------------------------------------------
-
-def list_raw_files(source: str) -> List[Path]:
-    """
-    Devuelve todos los .parquet de la carpeta raw/{source}.
-    """
-
-    folder = RAW_DIR / source
-    if not folder.exists():
-        raise ValueError(f"Fuente desconocida: {source}")
-    return list(folder.glob('*.parquet'))
 
 def read_raw(source: str) -> List[pd.DataFrame]:
     """
@@ -36,3 +26,13 @@ def read_raw(source: str) -> List[pd.DataFrame]:
     if not files:
         raise ValueError(f"No se encontraron ficheros parquet para la fuente {source}")
     return [pd.read_parquet(f) for f in files]
+
+
+def list_raw_files(source: str) -> List[Path]:
+    """
+    Devuelve todos los .parquet de la carpeta raw/{source}.
+    """
+    folder = RAW_DIR / source
+    if not folder.exists():
+        raise ValueError(f"Fuente desconocida: {source}")
+    return list(folder.glob('*.parquet'))

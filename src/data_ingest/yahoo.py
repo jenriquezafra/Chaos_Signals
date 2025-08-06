@@ -16,8 +16,7 @@ from datetime import datetime, timedelta
 # -----------------------------------------------------------------------------------
 # Configuración global  ─────────────────────────────────────────────────────────────
 # -----------------------------------------------------------------------------------
-DATA_DIR = Path("data/raw/yahoo").resolve()
-CACHE_SPOT_DIR = DATA_DIR / "stocks"
+CACHE_SPOT_DIR = Path("data/raw/yahoo").resolve()
 CACHE_SPOT_DIR.mkdir(parents=True, exist_ok=True)
 
 RATE_LIMIT_DELAY = 0.6  # yahoo solo deja 2 peticiones/s 
@@ -77,6 +76,7 @@ def get_spot(
     # 3) guarda caché
     if cache:
         _write_parquet(df, path)
+        print(f"Guardado {path.name}")
         
     time.sleep(RATE_LIMIT_DELAY)
     return df
@@ -106,7 +106,7 @@ def _spot_cache_path(tkr: str, iv: str) -> Path:
     tag = "latest"
     base_dir = CACHE_SPOT_DIR
     base_dir.mkdir(parents=True, exist_ok=True)
-    return base_dir / f"{tkr}_{tag}.parquet"
+    return base_dir / f"{tkr}_{iv}_{tag}.parquet"
 
 def _read_parquet(p: Path) -> pd.DataFrame:
     return pd.read_parquet(p)
