@@ -4,6 +4,7 @@ Proyecto Chaos_Signals ·  Python 3.12
 """
 
 import pandas as pd
+#import pandas_market_calendars as mcal
 
 
 # -----------------------------------------------------------------------------------
@@ -47,7 +48,8 @@ def check_date_continuity(
     ) -> None:
     """
     Vemos que no falten fechas según la frecuencia (por defecto días hábiles 'B').
-    El DataFrame debe tener el índice de tipo datetime
+    El DataFrame debe tener el índice de tipo datetime. 
+    WIP: hay que añadir calendario para Sotck/Forex/Índices respectivamente.
     """
     idx = pd.to_datetime(df.index)
     idx = idx.sort_values()
@@ -55,13 +57,25 @@ def check_date_continuity(
     missing = full_idx.difference(idx)
     assert missing.empty, f"Fechas faltantes detectadas: {len(missing)} gaps"
 
-def check_price_relations(df: pd.DataFrame) -> None:
+def check_price_relations(
+        df: pd.DataFrame,
+        cols=('open', 'high', 'low', 'close'),
+        eps = 5e-3
+        ) -> None:
     """
     Vemos que low <= open, close >=high para todos los registros.
     """
-    bad = df.query('low > high or open < low or close > high')
-    count = len(bad)
-    assert count == 0, f"{count} registros con precios inconsistentes"
+    o, h, l, c = (df[c].astype(float) for c in cols)
+
+    bad = (
+        (l -h > eps) |                      # low <= high
+        (o - h > eps) | (l - o > eps) |     # low <= open <= high
+        (c - h > eps) | (l - o > eps)       # low <= close <= high
+    )
+    count = int(bad.sum())
+    if count:
+        sample = df.index[bad][:10].tolist()
+        raise AssertionError(f"{count} registros con OHLC inconsistentes (eps = {eps}). Algunos: {sample}")
 
 def check_positive_values(
         df: pd.DataFrame,
@@ -90,6 +104,38 @@ def all_checks(
     check_schema(df, schema_cols)
     check_no_nulls(df, nulls_cols)
     check_no_duplicates(df, dup_subset)
-#    check_date_continuity(df, dates_freq) # quitado ahora mismo porque es muy rígido
+#    check_date_continuity(df, dates_freq) # está en proceso
     check_price_relations(df)
     check_positive_values(df, pos_cols)
+
+
+# -----------------------------------------------------------------------------------
+# Funciones adicionales    ─────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------------
+
+def ohlc_violation_report(
+        df: pd.DataFrame,
+        cols=('open', 'high', 'low', 'close'),
+        eps=1e-5,
+        n=10
+    ): 
+    o, h, l, c = (df[c].astype(float) for c in cols)
+    v = pd.DataFrame(index=df.index)
+    v['A_low>high'] = l > h + eps
+    v['B_open>high'] = o > h + eps
+    v['C_open<low'] = o < l - eps
+    v['D_close>high'] = c > h + eps
+    v['E_close<low'] = c < l - eps
+    v['any'] = v[['A_low>high','B_open>high','C_open<low','D_close>high','E_close<low']].any(axis=1)
+    bad = v[v['any']].copy()
+
+    # añadimos deltas para ver la magnitud
+    bad['d_l_h'] = df['low'] - df['high']
+    bad['d_o_h'] = df['open'] - df['high']
+    bad['d_o_l'] = df['open'] - df['high']
+    bad['d_c_h'] = df['close'] - df['high']
+    bad['d_c_l'] = df['close'] - df['low']
+
+    print("Resumen por tipo:\n", bad[['A_low>high','B_open>high','C_open<low','D_close>high','E_close<low']].sum())
+    print("\nTop ejemplos:")
+    return bad.head(n)
