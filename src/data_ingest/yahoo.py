@@ -26,8 +26,13 @@ logger = logging.getLogger(__name__)
 START_DATE = (datetime.now() - timedelta(days=365*3)).strftime("%Y-%m-%d") # últimos 3 años
 END_DATE = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d") # ayer
 
-TKRS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'AMD', 'META',
-        'GC=F', 'SPY', 'QQQ', 'EURUSD=X']
+
+TKRS = [
+    "QQQ", "SPY", "SOXX", "SMH",            # ETFs importantes
+    "AMD", "NVDA", "INTC", "TSM",           # semiconductores     
+    "MSFT", "GOOGL", "AMZN", "META",        # tech macro-drivers
+    "^VIX", "JPY=X", "TWD=X", "EURUSD=X",   # volatilidad y divisas importantes
+    "HG=F", "BZ=F", "CL=F"]                  # commodities
 
 # -----------------------------------------------------------------------------------
 # Funciones públicas    ─────────────────────────────────────────────────────────────
@@ -100,7 +105,9 @@ def update_cache(
 # Helpers privados      ─────────────────────────────────────────────────────────────
 # -----------------------------------------------------------------------------------
 
-OTHERS_TICKERS = {"GC=F", "QQQ", "SPY"}
+OTHERS_TICKERS = {"QQQ", "SPY", "SOXX", "SMH",
+                  "^VIX", "JPY=X", "TWD=X", "EURUSD=X",
+                  "HG=F", "BZ=F", "CL=F"}
 
 def _spot_cache_path(tkr: str, iv: str) -> Path:
     tag = "latest"

@@ -24,7 +24,7 @@ CLEANERS = {
 }
 
 # para la validación
-schema_cols = ['close', 'high', 'low', 'open', 'volume', 'daily_return', 'range', 'is_gap']
+schema_cols = ['close', 'high', 'low', 'open', 'volume', 'daily_return', 'log_return', 'range', 'is_gap']
 nulls_cols = ['close', 'high', 'low', 'open', 'volume']
 dup_subset = schema_cols
 pos_cols = ['close', 'high', 'low', 'open', 'volume', 'range']

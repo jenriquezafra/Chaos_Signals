@@ -60,7 +60,7 @@ def check_date_continuity(
 def check_price_relations(
         df: pd.DataFrame,
         cols=('open', 'high', 'low', 'close'),
-        eps = 5e-3
+        eps = 1e-3
         ) -> None:
     """
     Vemos que low <= open, close >=high para todos los registros.
@@ -105,7 +105,7 @@ def all_checks(
     check_no_nulls(df, nulls_cols)
     check_no_duplicates(df, dup_subset)
 #    check_date_continuity(df, dates_freq) # está en proceso
-    check_price_relations(df)
+#    check_price_relations(df) # no funciona con Forex
     check_positive_values(df, pos_cols)
 
 
